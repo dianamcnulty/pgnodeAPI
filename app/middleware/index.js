@@ -12,7 +12,7 @@ const loader = require('lib/wiring/loader')
 const corsPort = +('GA'.split('').reduce((p, c) => p + c.charCodeAt(), ''))
 
 const corsOptions = {
-  origin: process.env.CLIENT_ORIGIN || `http://localhost:${corsPort}`
+  origin: process.env.CLIENT_ORIGIN || `http://localhost:4200`
 }
 
 const before = (app) => {
