@@ -2,50 +2,50 @@
 
 const controller = require('lib/wiring/controller')
 const models = require('app/models')
-const Photo = models.photo
+const PgSite = models.pgSite
 
 const authenticate = require('./concerns/authenticate')
-const setUser = require('./concerns/set-current-user')
+// const setUser = require('./concerns/set-current-user')
 const setModel = require('./concerns/set-mongoose-model')
 
 const index = (req, res, next) => {
-  Photo.find()
-    .then(photos => res.json({
-      photos: photos.map((e) =>
-        e.toJSON({ virtuals: true, user: req.user }))
+  PgSite.find()
+    .then(pgSites => res.json({
+      pgSites: pgSites.map((e) =>
+        e.toJSON({ virtuals: true}))
     }))
     .catch(next)
 }
 
 const show = (req, res) => {
   res.json({
-    photo: req.photo.toJSON({ virtuals: true, user: req.user })
+    pgSite: req.pgSite.toJSON({ virtuals: true})
   })
 }
 
 const create = (req, res, next) => {
-  const photo = Object.assign(req.body.photo, {
+  const pgSite = Object.assign(req.body.pgSite, {
     _owner: req.user._id
   })
-  Photo.create(photo)
-    .then(photo =>
+  PgSite.create(pgSite)
+    .then(pgSite =>
       res.status(201)
         .json({
-          photo: photo.toJSON({ virtuals: true, user: req.user })
+          pgSite: pgSite.toJSON({ virtuals: true, user: req.user })
         }))
     .catch(next)
 }
 
 const update = (req, res, next) => {
-  delete req.body.photo._owner  // disallow owner reassignment.
+  delete req.body.pgSite._owner  // disallow owner reassignment.
 
-  req.photo.update(req.body.photo)
+  req.pgSite.update(req.body.pgSite)
     .then(() => res.sendStatus(204))
     .catch(next)
 }
 
 const destroy = (req, res, next) => {
-  req.photo.remove()
+  req.pgSite.remove()
     .then(() => res.sendStatus(204))
     .catch(next)
 }
@@ -57,8 +57,7 @@ module.exports = controller({
   update,
   destroy
 }, { before: [
-  { method: setUser, only: ['index', 'show'] },
   { method: authenticate, except: ['index', 'show'] },
-  { method: setModel(Photo), only: ['show'] },
-  { method: setModel(Photo, { forUser: true }), only: ['update', 'destroy'] }
+  { method: setModel(PgSite), only: ['show'] },
+  { method: setModel(PgSite, { forUser: true }), only: ['update', 'destroy'] }
 ] })

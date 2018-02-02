@@ -2,17 +2,33 @@
 
 const mongoose = require('mongoose')
 
-const photoSchema = new mongoose.Schema({
-  url: {
+const pgSiteSchema = new mongoose.Schema({
+  name: {
     type: String,
     required: true
   },
-  category: {
+  state: {
     type: String,
     required: true
   },
-  caption: {
+  zip: {
     type: String,
+    required: true
+  },
+  rating: {
+    type: String,
+    required: false
+  },
+  maxWindDir: {
+    type: Number,
+    required: false
+  },
+  minWindDir: {
+    type: Number,
+    required: false
+  },
+  restrictions: {
+    type: Array,
     required: false
   },
   _owner: {
@@ -23,7 +39,6 @@ const photoSchema = new mongoose.Schema({
 }, {
   timestamps: true,
   toJSON: {
-    virtuals: true,
     transform: function (doc, ret, options) {
       const userId = (options.user && options.user._id) || false
       ret.editable = userId && userId.equals(doc._owner)
@@ -32,10 +47,6 @@ const photoSchema = new mongoose.Schema({
   }
 })
 
-// photoSchema.virtual('length').get(function length () {
-//   return this.text.length
-// })
+const PgSites = mongoose.model('PgSites', pgSiteSchema)
 
-const Photo = mongoose.model('Photo', photoSchema)
-
-module.exports = Photo
+module.exports = PgSites
